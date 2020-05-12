@@ -1,0 +1,7 @@
+*.lock
+*.log
+*.swp
+
+runtime/
+logs/
+vendor/

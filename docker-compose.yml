@@ -1,0 +1,38 @@
+# vim: set ft=dosini
+---
+version: '3'
+services:
+  mariadb:
+    image: mariadb:10.5.2
+    restart: unless-stopped
+    container_name: mariadb
+    hostname: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_USER=fero
+      - MYSQL_PASSWORD=feropw
+    volumes:
+      - ./docker/runtime/mariadb:/var/lib/mysql
+
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+    restart: unless-stopped
+    container_name: php-fpm
+    hostname: php-fpm
+    volumes:
+      - ./src:/usr/share/nginx/html
+      - ./docker/runtime/logs:/logs
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    container_name: nginx
+    hostname: nginx
+    links:
+      - php-fpm
+    ports:
+      - 32765:80
+    volumes:
+      - ./docker/config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/usr/share/nginx/html
